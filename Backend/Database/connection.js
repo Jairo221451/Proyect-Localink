@@ -1,33 +1,14 @@
+require('dotenv').config();
 const mysql = require('mysql2/promise');
 
-// Configuración para Railway usando variables de entorno
 const connection = mysql.createPool({
-  host: process.env.MYSQLHOST || 'localhost',
-  port: process.env.MYSQLPORT || 3306,
-  user: process.env.MYSQLUSER || 'root',
-  password: process.env.MYSQLPASSWORD || 'TochielVroXd12',
-  database: process.env.MYSQLDATABASE || 'bd_ds',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  acquireTimeout: 60000,
-  timeout: 60000,
-  reconnect: true
 });
 
-// Función para probar la conexión
-const testConnection = async () => {
-  try {
-    const [rows] = await connection.execute('SELECT 1');
-    console.log('✅ Conexión a MySQL exitosa');
-    return true;
-  } catch (error) {
-    console.error('❌ Error al conectar con MySQL:', error.message);
-    return false;
-  }
-};
-
-// Exportar la conexión y la función de prueba
-module.exports = {
-  connection,
-  testConnection
-};
+module.exports = connection;
