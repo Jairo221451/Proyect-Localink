@@ -1,19 +1,33 @@
 const mysql = require('mysql2/promise');
-//const connection = mysql.createPool({
-//  host: '127.0.0.1',        // IP del servidor de base de datos
-//  port: 3308,               // 👈 PUERTO ACTUALIZADO
-//  user: 'root',             // Usuario de MySQL
-//  password: 'Xingyue@1',    // Contraseña
-//  database: 'bd_ventas',    // 👈 NOMBRE DE BASE DE DATOS ACTUALIZADO
-//  waitForConnections: true,
-//  connectionLimit: 10,      // Número máximo de conexiones simultáneas
-//});
+
+// Configuración para Railway usando variables de entorno
 const connection = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: 'TochielVroXd12',
-  database: 'bd_ds',
+  host: process.env.MYSQLHOST || 'localhost',
+  port: process.env.MYSQLPORT || 3306,
+  user: process.env.MYSQLUSER || 'root',
+  password: process.env.MYSQLPASSWORD || 'TochielVroXd12',
+  database: process.env.MYSQLDATABASE || 'bd_ds',
   waitForConnections: true,
   connectionLimit: 10,
+  acquireTimeout: 60000,
+  timeout: 60000,
+  reconnect: true
 });
-module.exports = connection;
+
+// Función para probar la conexión
+const testConnection = async () => {
+  try {
+    const [rows] = await connection.execute('SELECT 1');
+    console.log('✅ Conexión a MySQL exitosa');
+    return true;
+  } catch (error) {
+    console.error('❌ Error al conectar con MySQL:', error.message);
+    return false;
+  }
+};
+
+// Exportar la conexión y la función de prueba
+module.exports = {
+  connection,
+  testConnection
+};
